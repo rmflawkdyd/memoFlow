@@ -56,13 +56,15 @@ dependencies {
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.material3)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.bundles.compose)
     implementation(libs.androidx.activity.compose)
     implementation(libs.bundles.lifecycle)
     implementation(libs.androidx.navigation.compose)
-
+    implementation(libs.androidx.work.runtime.ktx)
     implementation(libs.google.hilt.android)
     ksp(libs.google.hilt.compiler)
     implementation(libs.androidx.hilt.navigation.compose)

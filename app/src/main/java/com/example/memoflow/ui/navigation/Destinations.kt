@@ -6,6 +6,6 @@ sealed class Destinations(val route: String) {
     data object Search: Destinations("search")
     data object Settings: Destinations("settings")
     data object Detail: Destinations("detail/{documentId}"){
-        fun createRoute(documentId: Int) = "detail/$documentId"
+        fun createRoute(documentId: Long) = "detail/$documentId"
     }
 }
