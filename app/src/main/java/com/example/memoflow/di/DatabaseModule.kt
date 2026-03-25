@@ -37,12 +37,4 @@ object DatabaseModule {
         return database.documentDao()
     }
 
-    @Provides
-    @Singleton
-    fun provideDocumentRepository(
-        documentDao: DocumentDao
-    ): DocumentRepository{
-        return DocumentRepositoryImpl(documentDao)
-    }
-
 }

@@ -1,7 +1,7 @@
 package com.example.memoflow.domain.repository
 
-import com.example.memoflow.data.local.entity.DocumentStatus
 import com.example.memoflow.domain.model.Document
+import com.example.memoflow.domain.model.DocumentStatus
 import kotlinx.coroutines.flow.Flow
 
 interface DocumentRepository {

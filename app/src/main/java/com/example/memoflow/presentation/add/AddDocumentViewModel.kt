@@ -2,8 +2,8 @@ package com.example.memoflow.presentation.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.memoflow.data.local.entity.DocumentStatus
 import com.example.memoflow.domain.model.Document
+import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
 import com.example.memoflow.domain.work.DocumentAiWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -19,6 +19,7 @@ class AddDocumentViewModel @Inject constructor(
     private val repository: DocumentRepository,
     private val workScheduler: DocumentAiWorkScheduler
 ): ViewModel(){
+
     private val _uiState= MutableStateFlow(AddDocumentUiState())
     val uiState: StateFlow<AddDocumentUiState> = _uiState.asStateFlow()
 
@@ -30,11 +31,15 @@ class AddDocumentViewModel @Inject constructor(
         _uiState.update { it.copy(originalText = text) }
     }
 
+    fun updateImagePath(imagePath: String?) {
+        _uiState.update { it.copy(imagePath = imagePath) }
+    }
+
     fun saveDocument(){
         val current = _uiState.value
 
-        if(current.title.isBlank()&& current.originalText.isBlank() && current.imagePath.isNullOrBlank()){
-            _uiState.update { it.copy(errorMessage = "내용을 입력해주세요.") }
+        if (current.originalText.isBlank() && current.imagePath.isNullOrBlank()) {
+            _uiState.update { it.copy(errorMessage = "텍스트 또는 이미지를 입력해주세요.") }
             return
         }
 
@@ -84,4 +89,7 @@ class AddDocumentViewModel @Inject constructor(
         _uiState.update { it.copy(errorMessage = null) }
     }
 
+    fun consumeSaveCompleted(){
+        _uiState.update { it.copy(isSaved = false) }
+    }
 }

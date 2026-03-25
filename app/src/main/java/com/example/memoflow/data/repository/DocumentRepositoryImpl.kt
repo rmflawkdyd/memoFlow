@@ -1,10 +1,10 @@
 package com.example.memoflow.data.repository
 
 import com.example.memoflow.data.local.dao.DocumentDao
-import com.example.memoflow.data.local.entity.DocumentStatus
 import com.example.memoflow.data.local.mapper.toDomain
 import com.example.memoflow.data.local.mapper.toEntity
 import com.example.memoflow.domain.model.Document
+import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

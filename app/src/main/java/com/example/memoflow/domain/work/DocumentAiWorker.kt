@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
-import com.example.memoflow.data.local.entity.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
+import com.example.memoflow.domain.model.DocumentStatus
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first

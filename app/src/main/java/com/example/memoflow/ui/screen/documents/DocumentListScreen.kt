@@ -25,7 +25,9 @@ fun DocumentListScreen(
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         items(uiState.documents,key = {it.id}){document ->
-            DocumentItem(document = document)
+            DocumentItem(
+                document = document,
+                onClick = {})
         }
     }
 }

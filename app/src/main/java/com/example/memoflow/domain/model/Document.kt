@@ -1,7 +1,5 @@
 package com.example.memoflow.domain.model
 
-import com.example.memoflow.data.local.entity.DocumentStatus
-
 data class Document(
     val id: Long,
     val title:String,
