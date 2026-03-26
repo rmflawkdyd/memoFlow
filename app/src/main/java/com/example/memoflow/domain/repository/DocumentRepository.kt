@@ -21,4 +21,9 @@ interface DocumentRepository {
         status: DocumentStatus,
         errorMessage: String?
     )
+
+    suspend fun updateOriginalText(
+        id: Long,
+        originalText: String
+    )
 }

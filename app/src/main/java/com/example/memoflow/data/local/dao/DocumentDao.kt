@@ -73,4 +73,6 @@ interface DocumentDao {
         updatedAt: Long = System.currentTimeMillis()
     )
 
+    @Query("""UPDATE documents SET originalText= :originalText, updatedAt =:updatedAt WHERE id =:id""")
+    suspend fun updateOriginalText(id:Long,originalText:String,updatedAt:Long=System.currentTimeMillis())
 }

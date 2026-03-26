@@ -60,4 +60,11 @@ class DocumentRepositoryImpl @Inject constructor(
             errorMessage = errorMessage
         )
     }
+
+    override suspend fun updateOriginalText(id: Long, originalText: String) {
+        documentDao.updateOriginalText(
+            id=id,
+            originalText = originalText)
+
+    }
 }

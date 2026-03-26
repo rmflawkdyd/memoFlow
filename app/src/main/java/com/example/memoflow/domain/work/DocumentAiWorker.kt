@@ -30,7 +30,14 @@ class DocumentAiWorker @AssistedInject constructor(
 
             val textToProcess = when{
                 document.originalText.isNotBlank()-> document.originalText
-                !document.imagePath.isNullOrBlank()->ocrTextExtractor.extractText(document.imagePath)
+                !document.imagePath.isNullOrBlank()->{
+                    val extractedText = ocrTextExtractor.extractText(document.imagePath)
+                    repository.updateOriginalText(
+                        id = documentId,
+                        originalText = extractedText
+                    )
+                    extractedText
+                }
                 else -> throw IllegalStateException("처리할 텍스트 또는 이미지가 없습니다.")
             }
 
