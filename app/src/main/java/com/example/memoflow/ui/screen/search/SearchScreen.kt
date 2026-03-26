@@ -19,17 +19,24 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.memoflow.presentation.search.SearchViewModel
 import com.example.memoflow.ui.component.DocumentCard
 import com.example.memoflow.ui.model.fakeDocuments
+import com.example.memoflow.ui.screen.documents.DocumentItem
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onBack:()->Unit,
     onOpenDetail:(Long)->Unit,
+    viewModel: SearchViewModel = hiltViewModel()
 ){
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -59,25 +66,23 @@ fun SearchScreen(
                     )
             }
 
-            item{
-                Text("최근 검색")
+            if(uiState.results.isEmpty()){
+                item{
+                    Text("검섹 결과가 없습니다.")
+                }
+            }else{
+                items(
+                    items = uiState.results,
+                    key = {it.id}
+                ){ document->
+                    DocumentItem(
+                        document = document,
+                        onClick = {onOpenDetail(document.id)}
+                    )
+                }
             }
 
-            item { Text("• 회의") }
-            item { Text("• 일정") }
-            item { Text("• OCR") }
 
-            item {
-                Text("검색 결과")
-            }
-
-            items(fakeDocuments){item->
-                DocumentCard(
-                    item = item,
-                    onClick = { onOpenDetail(item.id) }
-                )
-
-            }
         }
 
     }

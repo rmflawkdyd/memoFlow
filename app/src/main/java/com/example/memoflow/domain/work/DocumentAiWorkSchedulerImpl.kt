@@ -1,6 +1,7 @@
 package com.example.memoflow.domain.work
 
 import android.content.Context
+import androidx.work.ExistingWorkPolicy
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 import androidx.work.OneTimeWorkRequestBuilder
@@ -17,6 +18,9 @@ class DocumentAiWorkSchedulerImpl @Inject constructor(
             )
             .build()
 
-        WorkManager.getInstance(context).enqueue(request)
+        WorkManager.getInstance(context).enqueueUniqueWork(
+            "document-ai-$documentId",
+            ExistingWorkPolicy.REPLACE,
+            request)
     }
 }

@@ -5,6 +5,7 @@ import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.memoflow.domain.repository.DocumentRepository
+import com.example.memoflow.domain.work.DocumentAiWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -15,11 +16,12 @@ import javax.inject.Inject
 @HiltViewModel
 class DetailViewModel @Inject constructor(
     private val repository: DocumentRepository,
+    private val workScheduler: DocumentAiWorkScheduler,
     savedStateHandle: SavedStateHandle
 ) : ViewModel(){
+
     private val documentId: Long = checkNotNull(savedStateHandle["documentId"])
     private val _uiState = MutableStateFlow(DetailUiState())
-
     val uiState : StateFlow<DetailUiState> = _uiState.asStateFlow()
 
     init {
@@ -35,5 +37,10 @@ class DetailViewModel @Inject constructor(
                 )
             }
         }
+    }
+
+    fun retryAiProcessing(){
+        workScheduler.enqueue(documentId)
+
     }
 }

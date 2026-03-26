@@ -4,8 +4,10 @@ import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.example.memoflow.domain.ai.DocumentAiProcessor
 import com.example.memoflow.domain.repository.DocumentRepository
 import com.example.memoflow.domain.model.DocumentStatus
+import com.example.memoflow.domain.ocr.OcrTextExtractor
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -14,7 +16,9 @@ import kotlinx.coroutines.flow.first
 class DocumentAiWorker @AssistedInject constructor(
     @Assisted context: Context,
     @Assisted workerParams: WorkerParameters,
-    private val repository: DocumentRepository
+    private val repository: DocumentRepository,
+    private val ocrTextExtractor: OcrTextExtractor,
+    private val documentAiProcessor: DocumentAiProcessor
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         val documentId = inputData.getLong(KEY_DOCUMENT_ID,-1L)
@@ -24,15 +28,19 @@ class DocumentAiWorker @AssistedInject constructor(
             val document = repository.getDocumentById(documentId).first()
                 ?: return Result.failure()
 
-            val summary = makeSummary(document.originalText)
-            val keywords = extractKeywords(document.originalText)
-            val actionItems = extractActionItems(document.originalText)
+            val textToProcess = when{
+                document.originalText.isNotBlank()-> document.originalText
+                !document.imagePath.isNullOrBlank()->ocrTextExtractor.extractText(document.imagePath)
+                else -> throw IllegalStateException("처리할 텍스트 또는 이미지가 없습니다.")
+            }
+
+            val aiResult = documentAiProcessor.process(textToProcess)
 
             repository.updateAiResult(
                 id = documentId,
-                summary = summary,
-                keywords = keywords,
-                actionItems = actionItems,
+                summary = aiResult.summary,
+                keywords = aiResult.keywords,
+                actionItems = aiResult.actionItems,
                 status = DocumentStatus.DONE,
                 errorMessage = null
             )
@@ -49,22 +57,6 @@ class DocumentAiWorker @AssistedInject constructor(
             )
             Result.failure()
         }
-    }
-
-    private fun makeSummary(text:String): String{
-        return if (text.isBlank()) {
-            "요약할 내용이 없습니다."
-        } else {
-            text.take(100)
-        }
-    }
-
-    private fun extractKeywords(text: String): String{
-        return if (text.isBlank()) "" else "메모,요약,문서"
-    }
-
-    private fun extractActionItems(text: String): String{
-        return if (text.isBlank()) "" else "검토하기"
     }
 
     companion object{

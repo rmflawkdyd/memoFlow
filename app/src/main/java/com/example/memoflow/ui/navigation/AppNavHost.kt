@@ -43,8 +43,7 @@ fun AppNavHost(
                 onSaved = {
                     navController.popBackStack()
                 },
-                onPickImage = {}
-            )
+                )
         }
 
         composable(

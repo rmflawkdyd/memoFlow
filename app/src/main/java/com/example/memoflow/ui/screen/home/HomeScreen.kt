@@ -119,7 +119,7 @@ fun HomeScreen(
                         }
                     }else{
                         items(
-                            items = uiState.documents,
+                            items = uiState.filteredDocuments,
                             key ={it.id}
                         ){document->
                             DocumentItem(

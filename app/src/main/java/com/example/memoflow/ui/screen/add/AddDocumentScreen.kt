@@ -1,5 +1,7 @@
 package com.example.memoflow.ui.screen.add
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -28,10 +30,14 @@ import com.example.memoflow.presentation.add.AddDocumentViewModel
 fun AddDocumentScreen(
     onBack:()-> Unit,
     onSaved:()-> Unit,
-    onPickImage:()-> Unit,
     viewModel: AddDocumentViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val imagePicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) { uri ->
+        viewModel.updateImagePath(uri?.toString())
+    }
 
     LaunchedEffect(uiState.isSaved) {
         if(uiState.isSaved){
@@ -73,7 +79,7 @@ fun AddDocumentScreen(
             )
 
             OutlinedButton(
-                onClick = onPickImage,
+                onClick = {imagePicker.launch("image/*")},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -89,8 +95,6 @@ fun AddDocumentScreen(
             }
 
             HorizontalDivider()
-
-
 
             Button(
                 onClick = viewModel::saveDocument,
