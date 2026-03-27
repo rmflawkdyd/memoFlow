@@ -58,6 +58,8 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.androidx.hilt.common)
     implementation(libs.androidx.hilt.work)
+    implementation(libs.play.services.mlkit.text.recognition.common)
+    implementation(libs.play.services.mlkit.text.recognition)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.bundles.compose)

@@ -1,17 +1,29 @@
 package com.example.memoflow.di
 
-import com.example.memoflow.data.ai.FakeDocumentAiProcessor
-import com.example.memoflow.data.ocr.FakeOcrTextExtractor
+import android.annotation.SuppressLint
+import android.content.Context
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.PreferenceDataStoreFactory
+import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.preferencesDataStoreFile
+import androidx.work.impl.model.Preference
+import com.example.memoflow.data.ai.SimpleDocumentAiProcessor
+import com.example.memoflow.data.ocr.MlKitOcrTextExtractor
 import com.example.memoflow.data.repository.DocumentRepositoryImpl
+import com.example.memoflow.data.settings.SettingsRepositoryImpl
 import com.example.memoflow.domain.ai.DocumentAiProcessor
 import com.example.memoflow.domain.ocr.OcrTextExtractor
 import com.example.memoflow.domain.repository.DocumentRepository
+import com.example.memoflow.domain.settings.SettingsRepository
 import com.example.memoflow.domain.work.DocumentAiWorkScheduler
 import com.example.memoflow.domain.work.DocumentAiWorkSchedulerImpl
 import dagger.Binds
 import dagger.Module
+import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
+import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -29,12 +41,32 @@ abstract class RepositoryModule {
 
     @Binds
     abstract fun bindOcrTextExtractor(
-        impl: FakeOcrTextExtractor
+        impl: MlKitOcrTextExtractor
     ): OcrTextExtractor
 
     @Binds
     abstract fun bindDocumentAiProcessor(
-        impl: FakeDocumentAiProcessor
+        impl: SimpleDocumentAiProcessor
     ): DocumentAiProcessor
 
+    @Binds
+    abstract fun bindSettingsRepository(
+        impl: SettingsRepositoryImpl
+    ): SettingsRepository
+
+}
+
+@Module
+@InstallIn(SingletonComponent::class)
+object SettingsModule{
+    @SuppressLint("RestrictedApi")
+    @Provides
+    @Singleton
+    fun providePreferencesDataStore(
+        @ApplicationContext context: Context
+    ): DataStore<Preferences> {
+        return PreferenceDataStoreFactory.create(
+            produceFile = { context.preferencesDataStoreFile("settings.preferences_pb") }
+        )
+    }
 }

@@ -10,7 +10,6 @@ import androidx.navigation.navArgument
 import com.example.memoflow.ui.screen.add.AddDocumentScreen
 import com.example.memoflow.ui.screen.documents.DocumentDetailScreen
 import com.example.memoflow.ui.screen.home.HomeScreen
-import com.example.memoflow.ui.screen.search.SearchScreen
 import com.example.memoflow.ui.screen.settings.SettingsScreen
 
 @Composable
@@ -32,6 +31,9 @@ fun AppNavHost(
                onDocumentClick = { documentId ->
                    navController.navigate(Destinations.Detail.createRoute(documentId))
 
+               },
+               onSettingsClick = {
+                   navController.navigate(Destinations.Settings.route)
                }
            )
         }
@@ -57,14 +59,6 @@ fun AppNavHost(
             )
         }
 
-        composable(Destinations.Search.route) {
-            SearchScreen(
-                onBack = { navController.popBackStack() },
-                onOpenDetail = { id ->
-                    navController.navigate(Destinations.Detail.createRoute(id))
-                },
-            )
-        }
 
         composable(Destinations.Settings.route) {
             SettingsScreen(

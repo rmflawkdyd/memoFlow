@@ -4,6 +4,7 @@ package com.example.memoflow.ui.screen.home
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
@@ -14,10 +15,14 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.outlined.Search
+import androidx.compose.material.icons.outlined.Settings
 import androidx.compose.material3.AssistChip
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -33,17 +38,35 @@ import com.example.memoflow.presentation.home.HomeViewModel
 import com.example.memoflow.ui.screen.documents.DocumentItem
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onAddClick:()->Unit,
     onDocumentClick:(Long)-> Unit,
+    onSettingsClick:()->Unit,
     viewModel: HomeViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     Scaffold(
+        topBar = {
+            CenterAlignedTopAppBar(
+                title = {Text("MemoFlow")},
+                actions = {
+                    IconButton(onClick = onSettingsClick) {
+                        Icon(
+                            imageVector = Icons.Outlined.Settings,
+                            contentDescription = "설정"
+                        )
+                    }
+                },
+            )
+        },
         floatingActionButton = {
-            FloatingActionButton(onClick = onAddClick) {
+            FloatingActionButton(onClick = {
+                viewModel.clearSearchAndFilter()
+                onAddClick()
+            }) {
                 Icon(
                     imageVector = Icons.Default.Add,
                     contentDescription = "문서 추가"
@@ -61,76 +84,90 @@ fun HomeScreen(
                 }
             }
 
-            uiState.documents.isEmpty()->{
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
-                    contentAlignment = Alignment.Center
-                ){
-                    Text("저장된 문서가 없습니다.")
-                }
-            }
-
-            else ->{
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize().padding(innerPadding),
-                    contentPadding = PaddingValues(16.dp),
+            else -> {
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(innerPadding)
+                        .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    item {
-                        OutlinedTextField(
-                            value = uiState.searchQuery,
-                            onValueChange = viewModel::updateSearchQuery,
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = {Text("문서 검색")},
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Outlined.Search,
-                                    contentDescription = null
-                                )
-                            },
-                            singleLine = true
+                    OutlinedTextField(
+                        value = uiState.searchQuery,
+                        onValueChange = viewModel::updateSearchQuery,
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = { Text("문서 검색") },
+                        trailingIcon = {
+                            Icon(
+                                imageVector = Icons.Outlined.Search,
+                                contentDescription = null
+                            )
+                        },
+                        singleLine = true
+                    )
+
+                    Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                        AssistChip(
+                            onClick = { viewModel.updateFilter(HomeFilter.ALL) },
+                            label = { Text("전체") }
+                        )
+                        AssistChip(
+                            onClick = { viewModel.updateFilter(HomeFilter.PROCESSING) },
+                            label = { Text("처리 중") }
+                        )
+                        AssistChip(
+                            onClick = { viewModel.updateFilter(HomeFilter.DONE) },
+                            label = { Text("완료") }
+                        )
+                        AssistChip(
+                            onClick = { viewModel.updateFilter(HomeFilter.FAILED) },
+                            label = { Text("실패") }
                         )
                     }
 
-                    item {
-                        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)){
-                            AssistChip(
-                                onClick = {viewModel.updateFilter(HomeFilter.ALL)},
-                                label = {Text("전체")}
-                            )
-                            AssistChip(
-                                onClick = {viewModel.updateFilter(HomeFilter.PROCESSING)},
-                                label = {Text("처리 중")}
-                            )
-                            AssistChip(
-                                onClick = {viewModel.updateFilter(HomeFilter.DONE)},
-                                label = {Text("완료")}
-                            )
-                            AssistChip(
-                                onClick = {viewModel.updateFilter(HomeFilter.FAILED)},
-                                label = {Text("실패")}
-                            )
+                    when{
+                        !uiState.hasAnyDocuments -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("저장된 문서가 없습니다.")
+                            }
+                        }
+
+                        uiState.filteredDocuments.isEmpty() -> {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(1f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Text("조건에 맞는 문서가 없습니다.")
+                            }
+                        }
+                        else -> {
+                            LazyColumn(
+                                modifier = Modifier.weight(1f),
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                items(
+                                    items = uiState.filteredDocuments,
+                                    key = { it.id }
+                                ) { document ->
+                                    DocumentItem(
+                                        document = document,
+                                        onClick = { onDocumentClick(document.id) }
+                                    )
+                                }
+                            }
                         }
                     }
 
-                    if(uiState.filteredDocuments.isEmpty()){
-                        item {
-                            Text("조건에 맞는 문서가 없습니다.")
-                        }
-                    }else{
-                        items(
-                            items = uiState.filteredDocuments,
-                            key ={it.id}
-                        ){document->
-                            DocumentItem(
-                                document = document,
-                                onClick = {onDocumentClick(document.id)}
-                            )
-
-                        }
-                    }
                 }
             }
+
 
         }
 

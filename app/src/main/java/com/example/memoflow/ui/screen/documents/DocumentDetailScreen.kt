@@ -119,9 +119,6 @@ fun DocumentDetailScreen(
                     }
 
 
-                    if(document.status == DocumentStatus.PROCESSING){
-                        LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
-                    }
 
                     SectionTitle("원문")
                     Text(document.originalText.ifBlank { "이미지에서 추출될 텍스트를 기다리는 중입니다." })

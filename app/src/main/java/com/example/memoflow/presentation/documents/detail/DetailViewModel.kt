@@ -4,6 +4,7 @@ import androidx.compose.runtime.MutableState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
 import com.example.memoflow.domain.work.DocumentAiWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -40,7 +41,15 @@ class DetailViewModel @Inject constructor(
     }
 
     fun retryAiProcessing(){
-        workScheduler.enqueue(documentId)
+        viewModelScope.launch {
+            repository.updateStatus(
+                id = documentId,
+                status = DocumentStatus.PROCESSING,
+                errorMessage = null
+            )
+            workScheduler.enqueue(documentId)
+
+        }
 
     }
 }
