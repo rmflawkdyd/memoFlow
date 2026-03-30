@@ -30,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.memoflow.domain.model.AttachmentType
 import com.example.memoflow.presentation.add.AddDocumentViewModel
 
 
@@ -44,7 +45,14 @@ fun AddDocumentScreen(
     val imagePicker = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.GetContent()
     ) { uri ->
-        viewModel.updateImagePath(uri?.toString())
+        uri?.toString()?.let{viewModel.addAttachment(AttachmentType.IMAGE,it)}
+    }
+
+    val audioPicker = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.GetContent()
+    ) {
+        uri ->
+        uri?.toString()?.let{viewModel.addAttachment(AttachmentType.AUDIO,it)}
     }
 
     LaunchedEffect(uiState.isSaved) {
@@ -106,17 +114,20 @@ fun AddDocumentScreen(
                 onClick = {imagePicker.launch("image/*")},
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(
-                    if(uiState.imagePath.isNullOrBlank())"이미지 첨부" else "이미지 변경"
-                )
+                Text("이미지 첨부")
             }
 
-            if(!uiState.imagePath.isNullOrBlank()){
-                Text(
-                    text = "선택된 이미지: ${uiState.imagePath}",
-                    style = MaterialTheme.typography.bodySmall
-                )
+            OutlinedButton(
+                onClick = {audioPicker.launch("audio/*")},
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("오디오 첨부")
             }
+
+            uiState.attachments.forEach { attachment ->
+                Text("${attachment.type.name}: ${attachment.path}")
+            }
+
 
             HorizontalDivider()
 

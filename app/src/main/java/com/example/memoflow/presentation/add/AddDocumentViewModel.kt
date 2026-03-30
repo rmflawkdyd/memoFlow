@@ -2,7 +2,9 @@ package com.example.memoflow.presentation.add
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.memoflow.domain.model.AttachmentType
 import com.example.memoflow.domain.model.Document
+import com.example.memoflow.domain.model.DocumentAttachment
 import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
 import com.example.memoflow.domain.work.DocumentAiWorkScheduler
@@ -31,17 +33,17 @@ class AddDocumentViewModel @Inject constructor(
         _uiState.update { it.copy(originalText = text) }
     }
 
-    fun updateImagePath(imagePath: String?) {
-        _uiState.update { it.copy(imagePath = imagePath) }
-    }
+//    fun updateImagePath(imagePath: String?) {
+//        _uiState.update { it.copy(imagePath = imagePath) }
+//    }
 
     fun saveDocument(){
         val current = _uiState.value
 
-        if (current.originalText.isBlank() && current.imagePath.isNullOrBlank()) {
-            _uiState.update { it.copy(errorMessage = "텍스트 또는 이미지를 입력해주세요.") }
-            return
-        }
+//        if (current.originalText.isBlank() && current.imagePath.isNullOrBlank()) {
+//            _uiState.update { it.copy(errorMessage = "텍스트 또는 이미지를 입력해주세요.") }
+//            return
+//        }
 
         viewModelScope.launch {
             runCatching {
@@ -51,7 +53,6 @@ class AddDocumentViewModel @Inject constructor(
                     id = 0L,
                     title = current.title.ifBlank { "제목 없음" },
                     originalText = current.originalText,
-                    imagePath = current.imagePath,
                     summary = null,
                     keywords = null,
                     actionItems = null,
@@ -62,6 +63,18 @@ class AddDocumentViewModel @Inject constructor(
                 )
 
                 val documentId = repository.insertDocument(document)
+                repository.addAttachments(
+                    documentId = documentId,
+                    attachments = current.attachments.map {
+                        DocumentAttachment(
+                            id = 0L,
+                            documentId = documentId,
+                            type = it.type,
+                            path = it.path,
+                            createdAt = System.currentTimeMillis()
+                        )
+                    }
+                )
                 workScheduler.enqueue(documentId)
 
                 _uiState.update {
@@ -91,5 +104,16 @@ class AddDocumentViewModel @Inject constructor(
 
     fun consumeSaveCompleted(){
         _uiState.update { it.copy(isSaved = false) }
+    }
+
+    fun addAttachment(type: AttachmentType, path: String){
+        _uiState.update {
+            it.copy(
+                attachments = it.attachments+PendingAttachment(
+                    type = type,
+                    path = path
+                )
+            )
+        }
     }
 }

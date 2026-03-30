@@ -5,9 +5,11 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.memoflow.domain.ai.DocumentAiProcessor
+import com.example.memoflow.domain.model.AttachmentType
 import com.example.memoflow.domain.repository.DocumentRepository
 import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.ocr.OcrTextExtractor
+import com.example.memoflow.domain.stt.AudioTranscriber
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import kotlinx.coroutines.flow.first
@@ -18,6 +20,7 @@ class DocumentAiWorker @AssistedInject constructor(
     @Assisted workerParams: WorkerParameters,
     private val repository: DocumentRepository,
     private val ocrTextExtractor: OcrTextExtractor,
+    private val audioTranscriber: AudioTranscriber,
     private val documentAiProcessor: DocumentAiProcessor
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
@@ -25,23 +28,33 @@ class DocumentAiWorker @AssistedInject constructor(
         if(documentId == -1L) return Result.failure()
 
         return runCatching {
-            val document = repository.getDocumentById(documentId).first()
+            val detail = repository.getDocumentDetailById(documentId).first()
                 ?: return Result.failure()
 
-            val textToProcess = when{
-                document.originalText.isNotBlank()-> document.originalText
-                !document.imagePath.isNullOrBlank()->{
-                    val extractedText = ocrTextExtractor.extractText(document.imagePath)
-                    repository.updateOriginalText(
-                        id = documentId,
-                        originalText = extractedText
-                    )
-                    extractedText
-                }
-                else -> throw IllegalStateException("처리할 텍스트 또는 이미지가 없습니다.")
+            val collectedTexts = mutableListOf<String>()
+
+            if(detail.document.originalText.isNotBlank()){
+                collectedTexts += detail.document.originalText
             }
 
-            val aiResult = documentAiProcessor.process(textToProcess)
+            detail.attachments.forEach { attachment ->
+                when(attachment.type){
+                    AttachmentType.IMAGE -> {
+                        collectedTexts+=ocrTextExtractor.extractText(attachment.path)
+                    }
+
+                    AttachmentType.AUDIO->{
+                        collectedTexts+=audioTranscriber.transcribe(attachment.path)
+
+                    }
+                }
+            }
+            val mergedText = collectedTexts.joinToString("\n").trim()
+            repository.updateOriginalText(
+                id = documentId,
+                originalText = mergedText
+            )
+            val aiResult = documentAiProcessor.process(mergedText)
 
             repository.updateAiResult(
                 id = documentId,

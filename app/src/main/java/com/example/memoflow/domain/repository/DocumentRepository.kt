@@ -1,8 +1,11 @@
 package com.example.memoflow.domain.repository
 
 import com.example.memoflow.domain.model.Document
+import com.example.memoflow.domain.model.DocumentAttachment
+import com.example.memoflow.domain.model.DocumentDetail
 import com.example.memoflow.domain.model.DocumentStatus
 import kotlinx.coroutines.flow.Flow
+
 
 interface DocumentRepository {
     fun getAllDocuments(): Flow<List<Document>>
@@ -32,4 +35,9 @@ interface DocumentRepository {
         status: DocumentStatus,
         errorMessage: String?
     )
+
+    fun getDocumentDetailById(id: Long): Flow<DocumentDetail?>
+    suspend fun addAttachments(documentId: Long, attachments: List<DocumentAttachment>)
+
+
 }
