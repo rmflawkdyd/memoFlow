@@ -86,14 +86,16 @@ fun DocumentDetailScreen(
                     when (document.status) {
                         DocumentStatus.PROCESSING -> {
                             Text(
-                                text = if (document.imagePath != null && document.originalText.isBlank()) {
-                                    "이미지 문서가 저장되었습니다. OCR과 AI 요약이 순차적으로 진행됩니다."
+                                text = if (document.originalText.isBlank()) {
+                                    "첨부 내용을 분석하고 AI 정리를 준비 중입니다."
                                 } else {
                                     "문서가 저장되었습니다. AI가 요약, 키워드, 액션 아이템을 생성 중입니다."
                                 },
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                            LinearProgressIndicator(
+                                modifier = Modifier.fillMaxWidth()
+                            )
                         }
 
                         DocumentStatus.DONE -> {

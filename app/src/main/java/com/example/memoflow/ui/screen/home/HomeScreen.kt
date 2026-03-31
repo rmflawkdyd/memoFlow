@@ -158,7 +158,8 @@ fun HomeScreen(
                                 ) { document ->
                                     DocumentItem(
                                         document = document,
-                                        onClick = { onDocumentClick(document.id) }
+                                        onClick = { onDocumentClick(document.id) },
+                                        onDeleteClick = {viewModel.deleteDocument(document.id)}
                                     )
                                 }
                             }

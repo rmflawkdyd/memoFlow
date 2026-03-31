@@ -2,6 +2,7 @@ package com.example.memoflow.di
 
 import android.content.Context
 import androidx.room.Room
+import com.example.memoflow.data.local.dao.DocumentAttachmentDao
 import com.example.memoflow.data.local.dao.DocumentDao
 import com.example.memoflow.data.local.db.MemoFlowDatabase
 import com.example.memoflow.data.repository.DocumentRepositoryImpl
@@ -23,10 +24,12 @@ object DatabaseModule {
         @ApplicationContext context: Context
     ): MemoFlowDatabase{
         return Room.databaseBuilder(
-            context ,
-            MemoFlowDatabase::class.java ,
+            context,
+            MemoFlowDatabase::class.java,
             "memo_flow_db"
-        ).build()
+        )
+            .fallbackToDestructiveMigration(false)
+            .build()
     }
 
     @Provides
@@ -35,6 +38,15 @@ object DatabaseModule {
         database: MemoFlowDatabase
     ): DocumentDao{
         return database.documentDao()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDocumentAttachmentDao(
+        database: MemoFlowDatabase
+    ): DocumentAttachmentDao{
+        return database.documentAttachmentDao()
+
     }
 
 }

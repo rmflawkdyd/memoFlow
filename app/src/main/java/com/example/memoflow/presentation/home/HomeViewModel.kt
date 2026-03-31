@@ -58,4 +58,9 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+    fun deleteDocument(documentId: Long){
+        viewModelScope.launch {
+            repository.deleteById(documentId)
+        }
+    }
 }
