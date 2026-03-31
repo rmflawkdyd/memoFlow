@@ -12,7 +12,7 @@ data class GroqTranscriptionResponse(
 
 interface GroqSttApi {
     @Multipart
-    @POST("openai/v1/audio/")
+    @POST("openai/v1/audio/transcriptions")
     suspend fun transcribe(
         @Part file: MultipartBody.Part,
         @Part("model")model: RequestBody,

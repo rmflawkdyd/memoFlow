@@ -50,6 +50,9 @@ class DocumentAiWorker @AssistedInject constructor(
                 }
             }
             val mergedText = collectedTexts.joinToString("\n").trim()
+            if (mergedText.isBlank()) {
+                error("처리할 텍스트를 추출하지 못했습니다.")
+            }
             repository.updateOriginalText(
                 id = documentId,
                 originalText = mergedText

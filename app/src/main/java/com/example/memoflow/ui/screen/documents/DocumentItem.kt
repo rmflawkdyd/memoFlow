@@ -53,10 +53,6 @@ fun DocumentItem(
                 }
             }
 
-            Text(
-                text = document.title,
-                style = MaterialTheme.typography.titleMedium
-            )
 
             Text(
                 text = when(document.status){

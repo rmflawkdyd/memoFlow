@@ -40,10 +40,13 @@ class AddDocumentViewModel @Inject constructor(
     fun saveDocument(){
         val current = _uiState.value
 
-//        if (current.originalText.isBlank() && current.imagePath.isNullOrBlank()) {
-//            _uiState.update { it.copy(errorMessage = "텍스트 또는 이미지를 입력해주세요.") }
-//            return
-//        }
+        if (current.originalText.isBlank() && current.attachments.isEmpty()) {
+            _uiState.update {
+                it.copy(errorMessage = "텍스트 또는 첨부 파일을 입력해주세요.")
+            }
+            return
+        }
+
 
         viewModelScope.launch {
             runCatching {

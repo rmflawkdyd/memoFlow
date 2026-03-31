@@ -32,7 +32,13 @@ class GroqDocumentAiProcessor @Inject constructor(
         val content = response.choices.firstOrNull()?.message?.content
             ?: error("AI 응답이 비어 있습니다.")
 
-        val json = JSONObject(content)
+        val normalized = content
+            .removePrefix("```json")
+            .removePrefix("```")
+            .removeSuffix("```")
+            .trim()
+
+        val json = JSONObject(normalized)
 
         return DocumentAiResult(
             summary = json.getString("summary"),

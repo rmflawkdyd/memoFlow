@@ -1,5 +1,6 @@
 package com.example.memoflow.ui.screen.add
 
+import android.content.Intent
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.Arrangement
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -41,18 +43,31 @@ fun AddDocumentScreen(
     onSaved:()-> Unit,
     viewModel: AddDocumentViewModel = hiltViewModel()
 ){
+    val context = LocalContext.current
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val imagePicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) { uri ->
-        uri?.toString()?.let{viewModel.addAttachment(AttachmentType.IMAGE,it)}
+        uri?.let{
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.addAttachment(AttachmentType.IMAGE,it.toString())
+        }
     }
 
     val audioPicker = rememberLauncherForActivityResult(
-        contract = ActivityResultContracts.GetContent()
+        contract = ActivityResultContracts.OpenDocument()
     ) {
         uri ->
-        uri?.toString()?.let{viewModel.addAttachment(AttachmentType.AUDIO,it)}
+        uri?.let {
+            context.contentResolver.takePersistableUriPermission(
+                it,
+                Intent.FLAG_GRANT_READ_URI_PERMISSION
+            )
+            viewModel.addAttachment(AttachmentType.AUDIO, it.toString()) }
+
     }
 
     LaunchedEffect(uiState.isSaved) {
@@ -111,14 +126,14 @@ fun AddDocumentScreen(
             )
 
             OutlinedButton(
-                onClick = {imagePicker.launch("image/*")},
+                onClick = {imagePicker.launch(arrayOf("image/*"))},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("이미지 첨부")
             }
 
             OutlinedButton(
-                onClick = {audioPicker.launch("audio/*")},
+                onClick = {audioPicker.launch(arrayOf("audio/*"))},
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("오디오 첨부")
