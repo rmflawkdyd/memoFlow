@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.memoflow.domain.settings.AiMode
+import com.example.memoflow.domain.settings.OcrLanguage
 import com.example.memoflow.presentation.settings.SettingsViewModel
 import com.example.memoflow.ui.component.SettingsRadioRow
 
@@ -55,29 +56,70 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Card{
-                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-                    Text("AI 처리 방식")
+//            Card{
+//                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+//                    Text("AI 처리 방식")
+//                    SettingsRadioRow(
+//                        label = "자동",
+//                        selected = uiState.aiMode == AiMode.AUTO,
+//                        onClick = { viewModel.updateAiMode(AiMode.AUTO) },
+//                    )
+//
+//                    SettingsRadioRow(
+//                        label = "온디바이스 우선",
+//                        selected = uiState.aiMode == AiMode.ON_DEVICE_FIRST,
+//                        onClick = { viewModel.updateAiMode(AiMode.ON_DEVICE_FIRST) },
+//                    )
+//
+//                    SettingsRadioRow(
+//                        label = "클라우드 우선",
+//                        selected = uiState.aiMode == AiMode.CLOUD_FIRST,
+//                        onClick = { viewModel.updateAiMode(AiMode.CLOUD_FIRST) },
+//                    )
+//
+//                }
+//            }
+
+            Card {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("OCR 언어")
+
                     SettingsRadioRow(
-                        label = "자동",
-                        selected = uiState.aiMode == AiMode.AUTO,
-                        onClick = { viewModel.updateAiMode(AiMode.AUTO) },
+                        label = "자동(기기 언어)",
+                        selected = uiState.ocrLanguage == OcrLanguage.AUTO,
+                        onClick = { viewModel.updateOcrLanguage(OcrLanguage.AUTO) }
                     )
 
                     SettingsRadioRow(
-                        label = "온디바이스 우선",
-                        selected = uiState.aiMode == AiMode.ON_DEVICE_FIRST,
-                        onClick = { viewModel.updateAiMode(AiMode.ON_DEVICE_FIRST) },
+                        label = "한국어",
+                        selected = uiState.ocrLanguage == OcrLanguage.KOREAN,
+                        onClick = { viewModel.updateOcrLanguage(OcrLanguage.KOREAN) }
                     )
 
                     SettingsRadioRow(
-                        label = "클라우드 우선",
-                        selected = uiState.aiMode == AiMode.CLOUD_FIRST,
-                        onClick = { viewModel.updateAiMode(AiMode.CLOUD_FIRST) },
+                        label = "일본어",
+                        selected = uiState.ocrLanguage == OcrLanguage.JAPANESE,
+                        onClick = { viewModel.updateOcrLanguage(OcrLanguage.JAPANESE) }
                     )
 
+                    SettingsRadioRow(
+                        label = "중국어",
+                        selected = uiState.ocrLanguage == OcrLanguage.CHINESE,
+                        onClick = { viewModel.updateOcrLanguage(OcrLanguage.CHINESE) }
+                    )
+
+                    SettingsRadioRow(
+                        label = "라틴 문자",
+                        selected = uiState.ocrLanguage == OcrLanguage.LATIN,
+                        onClick = { viewModel.updateOcrLanguage(OcrLanguage.LATIN) }
+                    )
                 }
             }
+
 
             Card {
                 Column(

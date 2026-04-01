@@ -3,6 +3,7 @@ package com.example.memoflow.presentation.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.memoflow.domain.settings.AiMode
+import com.example.memoflow.domain.settings.OcrLanguage
 import com.example.memoflow.domain.settings.Settings
 import com.example.memoflow.domain.settings.SettingsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -33,6 +34,11 @@ class SettingsViewModel @Inject constructor(
     fun updateWifiOnly(enabled: Boolean){
         viewModelScope.launch {
             settingsRepository.updateWifiOnly(enabled)
+        }
+    }
+    fun updateOcrLanguage(ocrLanguage: OcrLanguage){
+        viewModelScope.launch {
+            settingsRepository.updateOcrLanguage(ocrLanguage)
         }
     }
 }

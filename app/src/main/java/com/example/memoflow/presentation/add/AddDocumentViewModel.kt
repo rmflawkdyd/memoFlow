@@ -7,11 +7,13 @@ import com.example.memoflow.domain.model.Document
 import com.example.memoflow.domain.model.DocumentAttachment
 import com.example.memoflow.domain.model.DocumentStatus
 import com.example.memoflow.domain.repository.DocumentRepository
+import com.example.memoflow.domain.settings.SettingsRepository
 import com.example.memoflow.domain.work.DocumentAiWorkScheduler
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -19,7 +21,8 @@ import javax.inject.Inject
 @HiltViewModel
 class AddDocumentViewModel @Inject constructor(
     private val repository: DocumentRepository,
-    private val workScheduler: DocumentAiWorkScheduler
+    private val workScheduler: DocumentAiWorkScheduler,
+    private val settingRepository: SettingsRepository
 ): ViewModel(){
 
     private val _uiState= MutableStateFlow(AddDocumentUiState())
@@ -50,6 +53,7 @@ class AddDocumentViewModel @Inject constructor(
 
         viewModelScope.launch {
             runCatching {
+                val settings = settingRepository.settingsFlow.first()
                 _uiState.update { it.copy(isSaving = true, errorMessage = null) }
                 val now = System.currentTimeMillis()
                 val document= Document(
@@ -78,7 +82,10 @@ class AddDocumentViewModel @Inject constructor(
                         )
                     }
                 )
-                workScheduler.enqueue(documentId)
+                workScheduler.enqueue(
+                    documentId = documentId,
+                    wifiOnly = settings.wifiOnly
+                )
 
                 _uiState.update {
                     it.copy(

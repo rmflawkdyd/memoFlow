@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.example.memoflow.domain.settings.AiMode
+import com.example.memoflow.domain.settings.OcrLanguage
 import com.example.memoflow.domain.settings.Settings
 import com.example.memoflow.domain.settings.SettingsRepository
 import kotlinx.coroutines.flow.Flow
@@ -19,7 +20,8 @@ class SettingsRepositoryImpl @Inject constructor(
         dataStore.data.map { prefs->
             Settings(
                 aiMode = prefs[KEY_AI_MODE]?.let { AiMode.valueOf(it) } ?: AiMode.AUTO,
-                wifiOnly = prefs[KEY_WIFI_ONLY]?: false
+                wifiOnly = prefs[KEY_WIFI_ONLY]?: false,
+                ocrLanguage = prefs[KEY_OCR_LANGUAGE]?.let{ OcrLanguage.valueOf(it)}?: OcrLanguage.AUTO
             )
         }
 
@@ -35,8 +37,15 @@ class SettingsRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun updateOcrLanguage(language: OcrLanguage) {
+        dataStore.edit { prefs->
+            prefs[KEY_OCR_LANGUAGE]=language.name
+        }
+    }
+
     companion object {
         private val KEY_AI_MODE = stringPreferencesKey("ai_mode")
         private val KEY_WIFI_ONLY = booleanPreferencesKey("wifi_only")
+        private val KEY_OCR_LANGUAGE = stringPreferencesKey("ocr_language")
     }
 }

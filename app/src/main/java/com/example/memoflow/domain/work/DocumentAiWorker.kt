@@ -21,7 +21,7 @@ class DocumentAiWorker @AssistedInject constructor(
     private val repository: DocumentRepository,
     private val ocrTextExtractor: OcrTextExtractor,
     private val audioTranscriber: AudioTranscriber,
-    private val documentAiProcessor: DocumentAiProcessor
+    private val documentAiProcessor: DocumentAiProcessor,
 ) : CoroutineWorker(context, workerParams) {
     override suspend fun doWork(): Result {
         val documentId = inputData.getLong(KEY_DOCUMENT_ID,-1L)

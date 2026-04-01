@@ -99,10 +99,7 @@ fun DocumentDetailScreen(
                         }
 
                         DocumentStatus.DONE -> {
-                            Text(
-                                text = "AI 정리가 완료되었습니다.",
-                                style = MaterialTheme.typography.bodyMedium
-                            )
+
                         }
 
                         DocumentStatus.FAILED -> {
@@ -131,7 +128,7 @@ fun DocumentDetailScreen(
                     SectionTitle("키워드")
                     Text(document.keywords ?: "아직 키워드가 없습니다.")
 
-                    SectionTitle("액션 아이템")
+                    SectionTitle("해야 할 일")
                     Text(document.actionItems ?: "아직 액션 아이템이 없습니다.")
 
                     document.errorMessages?.let{

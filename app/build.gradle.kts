@@ -64,6 +64,9 @@ dependencies {
     implementation(libs.androidx.hilt.work)
     implementation(libs.play.services.mlkit.text.recognition.common)
     implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.gms.play.services.mlkit.text.recognition.korean)
+    implementation(libs.gms.play.services.mlkit.text.recognition.japanese)
+    implementation(libs.gms.play.services.mlkit.text.recognition.chinese)
     androidTestImplementation(platform(libs.androidx.compose.bom))
 
     implementation(libs.bundles.compose)
@@ -86,6 +89,11 @@ dependencies {
     implementation(libs.squareup.retrofit)
     implementation(libs.squareup.retrofit.converter.gson)
     implementation(libs.squareup.okhttp)
+
+    implementation(libs.play.services.mlkit.text.recognition)
+    implementation(libs.play.services.mlkit.text.recognition.korean)
+    implementation(libs.play.services.mlkit.text.recognition.japanese)
+    implementation(libs.play.services.mlkit.text.recognition.chinese)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
 }

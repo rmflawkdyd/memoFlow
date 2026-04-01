@@ -6,4 +6,7 @@ interface SettingsRepository {
     val settingsFlow: Flow<Settings>
     suspend fun updateAiMode(aiMode: AiMode)
     suspend fun updateWifiOnly(enabled: Boolean)
+    suspend fun updateOcrLanguage(language: OcrLanguage)
 }
+
+
