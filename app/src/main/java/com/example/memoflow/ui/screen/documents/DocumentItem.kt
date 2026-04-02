@@ -56,6 +56,8 @@ fun DocumentItem(
 
             Text(
                 text = when(document.status){
+                    DocumentStatus.QUEUED -> "대기 중"
+                    DocumentStatus.WAITING_FOR_WIFI -> "Wi-Fi 대기"
                     DocumentStatus.PROCESSING -> "처리 중"
                     DocumentStatus.DONE -> "완료"
                     DocumentStatus.FAILED -> "실패"
@@ -65,13 +67,21 @@ fun DocumentItem(
             )
 
             when(document.status){
+                DocumentStatus.QUEUED ->{
+                    Text(
+                        text = "대기 중",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                DocumentStatus.WAITING_FOR_WIFI->{
+                    Text(
+                        text = "Wi-Fi 대기",
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
                 DocumentStatus.PROCESSING->{
                     Text(
-                        text = if(document.originalText.isBlank()){
-                            "이미지가 저장되었습니다. OCR 및 AI 처리를 기다리는 중입니다."
-                        }else {
-                            "문서가 저장되었습니다. AI가 내용을 정리하는 중입니다."
-                        },
+                        text = "문서를 분석하고 있습니다.",
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

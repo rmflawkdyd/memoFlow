@@ -31,7 +31,9 @@ data class HomeUiState(
         }.filter { document ->
                 when(selectedFilter){
                     HomeFilter.ALL -> true
-                    HomeFilter.PROCESSING -> document.status == DocumentStatus.PROCESSING
+                    HomeFilter.PROCESSING -> document.status == DocumentStatus.QUEUED ||
+                            document.status == DocumentStatus.WAITING_FOR_WIFI ||
+                            document.status == DocumentStatus.PROCESSING
                     HomeFilter.DONE -> document.status == DocumentStatus.DONE
                     HomeFilter.FAILED -> document.status == DocumentStatus.FAILED
                 }

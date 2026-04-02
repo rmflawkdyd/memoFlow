@@ -49,7 +49,11 @@ class DetailViewModel @Inject constructor(
             val settings = settingsRepository.settingsFlow.first()
             repository.updateStatus(
                 id = documentId,
-                status = DocumentStatus.PROCESSING,
+                status = if (settings.wifiOnly) {
+                    DocumentStatus.WAITING_FOR_WIFI
+                } else {
+                    DocumentStatus.QUEUED
+                },
                 errorMessage = null
             )
             workScheduler.enqueue(

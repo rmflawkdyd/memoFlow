@@ -36,10 +36,6 @@ class AddDocumentViewModel @Inject constructor(
         _uiState.update { it.copy(originalText = text) }
     }
 
-//    fun updateImagePath(imagePath: String?) {
-//        _uiState.update { it.copy(imagePath = imagePath) }
-//    }
-
     fun saveDocument(){
         val current = _uiState.value
 
@@ -54,7 +50,13 @@ class AddDocumentViewModel @Inject constructor(
         viewModelScope.launch {
             runCatching {
                 val settings = settingRepository.settingsFlow.first()
+                val initialStatus = if (settings.wifiOnly) {
+                    DocumentStatus.WAITING_FOR_WIFI
+                } else {
+                    DocumentStatus.QUEUED
+                }
                 _uiState.update { it.copy(isSaving = true, errorMessage = null) }
+
                 val now = System.currentTimeMillis()
                 val document= Document(
                     id = 0L,
@@ -63,7 +65,7 @@ class AddDocumentViewModel @Inject constructor(
                     summary = null,
                     keywords = null,
                     actionItems = null,
-                    status = DocumentStatus.PROCESSING,
+                    status = initialStatus,
                     errorMessages = null,
                     createdAt = now,
                     updatedAt = now

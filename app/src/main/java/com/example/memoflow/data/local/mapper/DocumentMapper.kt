@@ -37,6 +37,8 @@ fun Document.toEntity(): DocumentEntity {
 
 private fun EntityDocumentStatus.toDomain(): DomainDocumentStatus {
     return when (this) {
+        EntityDocumentStatus.QUEUED -> DomainDocumentStatus.QUEUED
+        EntityDocumentStatus.WAITING_FOR_WIFI -> DomainDocumentStatus.WAITING_FOR_WIFI
         EntityDocumentStatus.PROCESSING -> DomainDocumentStatus.PROCESSING
         EntityDocumentStatus.DONE -> DomainDocumentStatus.DONE
         EntityDocumentStatus.FAILED -> DomainDocumentStatus.FAILED
@@ -45,6 +47,8 @@ private fun EntityDocumentStatus.toDomain(): DomainDocumentStatus {
 
 private fun DomainDocumentStatus.toEntity(): EntityDocumentStatus {
     return when (this) {
+        DomainDocumentStatus.QUEUED -> EntityDocumentStatus.QUEUED
+        DomainDocumentStatus.WAITING_FOR_WIFI -> EntityDocumentStatus.WAITING_FOR_WIFI
         DomainDocumentStatus.PROCESSING -> EntityDocumentStatus.PROCESSING
         DomainDocumentStatus.DONE -> EntityDocumentStatus.DONE
         DomainDocumentStatus.FAILED -> EntityDocumentStatus.FAILED

@@ -84,18 +84,28 @@ fun DocumentDetailScreen(
 
                     // 상태 텍스트 아래에 추가
                     when (document.status) {
-                        DocumentStatus.PROCESSING -> {
+
+                        DocumentStatus.QUEUED -> {
                             Text(
-                                text = if (document.originalText.isBlank()) {
-                                    "첨부 내용을 분석하고 AI 정리를 준비 중입니다."
-                                } else {
-                                    "문서가 저장되었습니다. AI가 요약, 키워드, 액션 아이템을 생성 중입니다."
-                                },
+                                text = "문서가 저장되었습니다. 처리를 준비 중입니다.",
                                 style = MaterialTheme.typography.bodyMedium
                             )
-                            LinearProgressIndicator(
-                                modifier = Modifier.fillMaxWidth()
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        }
+
+                        DocumentStatus.WAITING_FOR_WIFI -> {
+                            Text(
+                                text = "Wi-Fi 연결 후 AI 처리가 시작됩니다.",
+                                style = MaterialTheme.typography.bodyMedium
                             )
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
+                        }
+                        DocumentStatus.PROCESSING -> {
+                            Text(
+                                text = "문서를 분석하고 있습니다.",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                            LinearProgressIndicator(modifier = Modifier.fillMaxWidth())
                         }
 
                         DocumentStatus.DONE -> {
@@ -104,7 +114,7 @@ fun DocumentDetailScreen(
 
                         DocumentStatus.FAILED -> {
                             Text(
-                                text = document.errorMessages ?: "AI 처리 중 오류가 발생했습니다.",
+                                text = document.errorMessages ?: "문서 처리 중 오류가 발생했습니다.",
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = MaterialTheme.colorScheme.error
                             )

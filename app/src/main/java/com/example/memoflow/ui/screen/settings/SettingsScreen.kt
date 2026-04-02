@@ -37,7 +37,7 @@ fun SettingsScreen(
     viewModel: SettingsViewModel = hiltViewModel()
 ){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
-
+    val showAiModeSection  = false
     Scaffold(
         topBar = {
             CenterAlignedTopAppBar(
@@ -56,29 +56,32 @@ fun SettingsScreen(
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-//            Card{
-//                Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
-//                    Text("AI 처리 방식")
-//                    SettingsRadioRow(
-//                        label = "자동",
-//                        selected = uiState.aiMode == AiMode.AUTO,
-//                        onClick = { viewModel.updateAiMode(AiMode.AUTO) },
-//                    )
-//
-//                    SettingsRadioRow(
-//                        label = "온디바이스 우선",
-//                        selected = uiState.aiMode == AiMode.ON_DEVICE_FIRST,
-//                        onClick = { viewModel.updateAiMode(AiMode.ON_DEVICE_FIRST) },
-//                    )
-//
-//                    SettingsRadioRow(
-//                        label = "클라우드 우선",
-//                        selected = uiState.aiMode == AiMode.CLOUD_FIRST,
-//                        onClick = { viewModel.updateAiMode(AiMode.CLOUD_FIRST) },
-//                    )
-//
-//                }
-//            }
+            if(showAiModeSection){
+                Card{
+                    Column(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+                        Text("AI 처리 방식")
+                        SettingsRadioRow(
+                            label = "자동",
+                            selected = uiState.aiMode == AiMode.AUTO,
+                            onClick = { viewModel.updateAiMode(AiMode.AUTO) },
+                        )
+
+                        SettingsRadioRow(
+                            label = "온디바이스 우선",
+                            selected = uiState.aiMode == AiMode.ON_DEVICE_FIRST,
+                            onClick = { viewModel.updateAiMode(AiMode.ON_DEVICE_FIRST) },
+                        )
+
+                        SettingsRadioRow(
+                            label = "클라우드 우선",
+                            selected = uiState.aiMode == AiMode.CLOUD_FIRST,
+                            onClick = { viewModel.updateAiMode(AiMode.CLOUD_FIRST) },
+                        )
+
+                    }
+                }
+            }
+
 
             Card {
                 Column(

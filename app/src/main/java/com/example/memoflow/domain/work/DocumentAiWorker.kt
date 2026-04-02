@@ -31,6 +31,12 @@ class DocumentAiWorker @AssistedInject constructor(
             val detail = repository.getDocumentDetailById(documentId).first()
                 ?: return Result.failure()
 
+            repository.updateStatus(
+                id = documentId,
+                status = DocumentStatus.PROCESSING,
+                errorMessage = null
+            )
+
             val collectedTexts = mutableListOf<String>()
 
             if(detail.document.originalText.isNotBlank()){
